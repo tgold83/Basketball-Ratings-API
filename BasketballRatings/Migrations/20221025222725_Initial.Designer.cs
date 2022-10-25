@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BasketballRatings.Migrations
 {
     [DbContext(typeof(BasketballRatingsContext))]
-    [Migration("20221025182601_Initial")]
+    [Migration("20221025222725_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

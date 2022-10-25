@@ -6,6 +6,5 @@ namespace DTO
   {
     public List<string> PlayerName { get; set; }
     public string PositionName { get; set; }
-    public string Team { get; set; }
   }
 }

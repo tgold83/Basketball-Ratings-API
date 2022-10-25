@@ -5,19 +5,39 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BasketballRatings.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using BasketballRatings.Repository;
 
 namespace BasketballRatings.Controllers
 {
+  [Authorize]
   [Route("api/[controller]")]
   [ApiController]
   public class PositionsController : ControllerBase
   {
+    private readonly IJWTManagerRepository _jWTManager;
     private readonly BasketballRatingsContext _db;
 
-    public PositionsController(BasketballRatingsContext db)
+	  public PositionsController(IJWTManagerRepository jWTManager, BasketballRatingsContext db)
     {
+      this._jWTManager = jWTManager;
       _db = db;
     }
+
+  [AllowAnonymous]
+	[HttpPost]
+	[Route("authenticate")]
+	public IActionResult Authenticate(Users usersdata)
+	{
+		var token = _jWTManager.Authenticate(usersdata);
+
+		if (token == null)
+		{
+			return Unauthorized();
+		}
+
+		return Ok(token);
+	}
 
     // GET api/Positions
     [HttpGet]
