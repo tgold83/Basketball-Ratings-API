@@ -1,3 +1,4 @@
+using DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,11 @@ namespace BasketballRatings.Controllers
 
     // GET api/players
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Player>>> Get(string firstName, string lastName, string team)
+    public ActionResult<List<PlayerPositionDTO>> Get (string firstName, string lastName, string team)
     {
-      var query = _db.Players.AsQueryable();
+      List<PlayerPositionDTO> playerPosition = new List<PlayerPositionDTO>(){};
+
+      var query = _db.Players.Include(player => player.JoinEntities).ThenInclude(join => join.Position).AsQueryable();
 
       if (firstName != null)
       {
@@ -38,8 +41,22 @@ namespace BasketballRatings.Controllers
       {
         query = query.Where(entry => entry.Team == team);
       }
+      
+      var playerList = query.ToList();
+      foreach(Player player in playerList)
+      {
+        var PlayerPositionDTO = new PlayerPositionDTO() { FirstName = player.FirstName , LastName = player.LastName, Team = player.Team}; 
+        var PlayerPositionList = new List<string>(){};
+        foreach(PlayerPosition join in player.JoinEntities)
+        {
+          var position = join.Position.PositionName;
+          PlayerPositionList.Add(position);
+        }
+        PlayerPositionDTO.PositionName = PlayerPositionList;
+        playerPosition.Add(PlayerPositionDTO);
+      }
 
-      return await query.ToListAsync();
+      return playerPosition;
     }
 
     // POST api/players

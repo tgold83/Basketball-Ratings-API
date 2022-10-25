@@ -1,3 +1,4 @@
+using DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,32 @@ namespace BasketballRatings.Controllers
 
     // GET api/Positions
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Position>>> Get(string positionName)
+    public ActionResult<List<PositionPlayerDTO>> Get (string positionName)
     {
-      var query = _db.Positions.AsQueryable();
+      List<PositionPlayerDTO> positionPlayer = new List<PositionPlayerDTO>(){};
+
+      var query = _db.Positions.Include(position => position.JoinEntities).ThenInclude(join => join.Player).AsQueryable();
 
       if (positionName != null)
       {
         query = query.Where(entry => entry.PositionName == positionName);
       }
 
-      return await query.ToListAsync();
+      var positionList = query.ToList();
+      foreach(Position position in positionList)
+      {
+        var PositionPlayerDTO = new PositionPlayerDTO() { PositionName = position.PositionName}; 
+        var PositionPlayerList = new List<string>(){};
+        foreach(PlayerPosition join in position.JoinEntities)
+        {
+          var playerName = join.Player.FirstName + " " + join.Player.LastName;
+          PositionPlayerList.Add(playerName);
+        }
+        PositionPlayerDTO.PlayerName = PositionPlayerList;
+        positionPlayer.Add(PositionPlayerDTO);
+      }
+
+      return positionPlayer;
     }
 
     // POST api/Positions
