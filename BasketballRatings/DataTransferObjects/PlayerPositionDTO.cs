@@ -8,5 +8,6 @@ namespace DTO
     public string LastName { get; set; }
     public List<string> PositionName { get; set; }
     public string Team { get; set; }
+    public int PlayerId { get; set; }
   }
 }

@@ -67,7 +67,7 @@ namespace BasketballRatings.Controllers
       var playerList = query.ToList();
       foreach(Player player in playerList)
       {
-        var PlayerPositionDTO = new PlayerPositionDTO() { FirstName = player.FirstName , LastName = player.LastName, Team = player.Team}; 
+        var PlayerPositionDTO = new PlayerPositionDTO() { FirstName = player.FirstName , LastName = player.LastName, Team = player.Team, PlayerId = player.PlayerId}; 
         var PlayerPositionList = new List<string>(){};
         foreach(PlayerPosition join in player.JoinEntities)
         {
