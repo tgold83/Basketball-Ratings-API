@@ -81,6 +81,23 @@ namespace BasketballRatings.Controllers
       return playerPosition;
     }
 
+    // GET: api/Players/5
+    [HttpGet("{id}")]
+    public ActionResult<PlayerPositionDTO> Get(int id)
+    {
+      var player = _db.Players.Include(player => player.JoinEntities).ThenInclude(join => join.Position).FirstOrDefault(entry => entry.PlayerId == id);
+      var PlayerPositionDTO = new PlayerPositionDTO() { FirstName = player.FirstName , LastName = player.LastName, Team = player.Team, PlayerId = player.PlayerId}; 
+      var PlayerPositionList = new List<string>(){};
+      foreach(PlayerPosition join in player.JoinEntities)
+      {
+        var position = join.Position.PositionName;
+        PlayerPositionList.Add(position);
+      }
+      PlayerPositionDTO.PositionName = PlayerPositionList;
+      return PlayerPositionDTO;
+    }
+     
+
     // POST api/players
     [HttpPost]
     public async Task<ActionResult<Player>> Post(Player player)
